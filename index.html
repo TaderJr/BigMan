@@ -919,12 +919,12 @@ function updateCountdown() {
 
         scheduleNextCoinEmission();
 
-        let data = [
-            { rank: 1, player: 'undefined', wagered: 0, prize: '$80', photo: '' },
-            { rank: 2, player: 'undefined', wagered: 0, prize: '$50', photo: '' },
-            { rank: 3, player: 'undefined', wagered: 0, prize: '$30', photo: '' },
-            { rank: 4, player: 'undefined', wagered: 0, prize: '$25', photo: '' },
-            { rank: 5, player: 'undefined', wagered: 0, prize: '$15', photo: '' },
+let data = [
+            { rank: 1, player: 'undefined', wagered: 0, prize: '80', photo: '' },
+            { rank: 2, player: 'undefined', wagered: 0, prize: '50', photo: '' },
+            { rank: 3, player: 'undefined', wagered: 0, prize: '30', photo: '' },
+            { rank: 4, player: 'undefined', wagered: 0, prize: '25', photo: '' },
+            { rank: 5, player: 'undefined', wagered: 0, prize: '15', photo: '' },
             { rank: 6, player: 'undefined', wagered: 0, prize: 'NULL', photo: '' },
             { rank: 7, player: 'undefined', wagered: 0, prize: 'NULL', photo: '' },
             { rank: 8, player: 'undefined', wagered: 0, prize: 'NULL', photo: '' },
@@ -998,23 +998,9 @@ function updateCountdown() {
             }
         }
 
-        function calculatePrize(rank, total) {
-            const prizeDistribution = {
-                1: 0.40,
-                2: 0.25,
-                3: 0.15,
-                4: 0.10,
-                5: 0.05,
-                6: 0.03,
-                7: 0.01,
-                8: 0.005,
-                9: 0.003,
-                10: 0.002
-            };
-
-            const percentage = prizeDistribution[rank] || 0;
-            const prize = Math.round(total * percentage);
-            return prize > 0 ? formatNum(prize) : 'NULL';
+function calculatePrize(rank) {
+            const prizes = { 1: 80, 2: 50, 3: 30, 4: 25, 5: 15 };
+            return prizes[rank] ? String(prizes[rank]) : 'NULL';
         }
 
 async function fetchData() {
@@ -1040,7 +1026,7 @@ async function fetchData() {
                         rank: index + 1,
                         player: entry.username || 'unknown',
                         wagered: Math.round(parseFloat(entry.wager) || 0),
-                        prize: calculatePrize(index + 1, totalPrizePool),
+                        prize: calculatePrize(index + 1),
                         photo: entry.photo || ''
                     }));
 
@@ -1085,5 +1071,6 @@ async function fetchData() {
         }, 30000);
     </script>
 </body>
+
 
 </html>
