@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OXYY Diceblox Leaderboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0d0d0d;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('Backgroundd.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 1;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 13, 13, 0.05);
+            z-index: -1;
+        }
+
+        .firefly {
+            position: fixed;
+            width: 25px;
+            height: 25px;
+            pointer-events: none;
+            z-index: 1;
+            animation: fly 15s infinite ease-in-out;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+        }
+
+        @keyframes fly {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+        }
+
+        .wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .brand-pfp {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #9b7fd6;
+            box-shadow: 0 0 15px rgba(155, 127, 214, 0.4);
+        }
+
+        .brand-text {
+            text-align: center;
+        }
+
+        .brand {
+            font-size: 28px;
+            font-weight: 700;
+            color: #d4af37;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            line-height: 1;
+        }
+
+        .brand-subtitle {
+            font-size: 15px;
+            color: #888;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .countdown {
+            font-size: 16px;
+            color: #9b7fd6;
+            font-weight: 600;
+            margin-top: 10px;
+            text-shadow: 0 0 10px rgba(155, 127, 214, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .countdown span {
+            color: #d4af37;
+            font-weight: 700;
+        }
+
+        .live-badge {
+            position: absolute;
+            top: -10px;
+            right: -80px;
+            background: #ff0000;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulse-live 2s infinite;
+        }
+
+        @keyframes pulse-live {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            }
+
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            }
+        }
+
+        .diceblox-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            transition: 0.2s;
+            cursor: pointer;
+            display: block;
+            z-index: 100;
+            pointer-events: all;
+        }
+
+        .diceblox-link img {
+            height: 35px;
+            width: auto;
+            border-radius: 4px;
+            display: block;
+            pointer-events: all;
+        }
+
+        .diceblox-link:hover {
+            transform: scale(1.05);
+        }
+
+        .podium {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+
+        .podium-spot {
+            background: rgba(26, 26, 46, 0.85);
+            border: 1px solid rgba(155, 127, 214, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            min-width: 140px;
+            transition: all 0.5s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .podium-spot:hover {
+            background: rgba(31, 31, 51, 0.9);
+            border-color: rgba(155, 127, 214, 0.5);
+        }
+
+        .spot-2 {
+            height: 160px;
+            order: 1;
+        }
+
+        .spot-1 {
+            height: 200px;
+            order: 2;
+            border-color: #d4af37;
+            position: relative;
+        }
+
+        .spot-1::before {
+            content: '👑';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+        }
+
+        .spot-3 {
+            height: 140px;
+            order: 3;
+        }
+
+        .podium-rank {
+            font-size: 28px;
+            font-weight: 700;
+            color: #9b7fd6;
+            margin-bottom: 8px;
+        }
+
+        .spot-1 .podium-rank {
+            color: #ffd700;
+        }
+
+        .spot-2 .podium-rank {
+            color: #c0c0c0;
+        }
+
+        .spot-3 .podium-rank {
+            color: #cd7f32;
+        }
+
+        .podium-player {
+            font-size: 15px;
+            color: #e0e0e0;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .podium-stats {
+            font-size: 12px;
+            color: #888;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .robux-icon {
+            width: 12px;
+            height: 12px;
+        }
+
+        .board {
+            background: rgba(26, 26, 46, 0.85);
+            border-radius: 6px;
+            border: 1px solid rgba(155, 127, 214, 0.3);
+            overflow: hidden;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .board-header {
+            background: rgba(21, 21, 41, 0.9);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(155, 127, 214, 0.3);
+        }
+
+        .board-header h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #9b7fd6;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(21, 21, 41, 0.9);
+        }
+
+        th {
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child {
+            width: 60px;
+            text-align: center;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(155, 127, 214, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(31, 31, 51, 0.6);
+        }
+
+        td {
+            padding: 15px 20px;
+            font-size: 14px;
+        }
+
+        td:first-child {
+            text-align: center;
+            font-weight: 700;
+            color: #9b7fd6;
+        }
+
+        .player-name {
+            color: #e0e0e0;
+        }
+
+        .stat-val {
+            color: #aaa;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .prize-val {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .kick-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: rgba(26, 26, 46, 0.85);
+            color: #e0e0e0;
+            padding: 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            border: 1px solid rgba(155, 127, 214, 0.3);
+            text-align: center;
+            font-weight: 600;
+            transition: 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .kick-btn:hover {
+            background: rgba(34, 34, 54, 0.9);
+            border-color: #9b7fd6;
+        }
+
+        .kick-btn img {
+            height: 24px;
+            width: auto;
+        }
+
+        @media (max-width: 768px) {
+            .podium {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .spot-1,
+            .spot-2,
+            .spot-3 {
+                order: initial;
+                height: auto;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            th,
+            td {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+        }
+
+        .rocket-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        .rocket {
+            width: 80px;
+            height: 100px;
+            position: relative;
+            animation: hover 2s ease-in-out infinite;
+        }
+
+        @keyframes hover {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(-5deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(-5deg);
+            }
+        }
+
+        .rocket-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6));
+        }
+
+        .robux-container {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 60px;
+        }
+
+        .robux-flame {
+            position: absolute;
+            width: 35px;
+            height: 35px;
+            animation: robux-flicker 0.2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.8));
+        }
+
+        .robux-flame:nth-child(1) {
+            left: 5px;
+            bottom: 0;
+            animation-delay: 0s;
+        }
+
+        .robux-flame:nth-child(2) {
+            left: 22px;
+            bottom: 5px;
+            animation-delay: 0.07s;
+            width: 40px;
+            height: 40px;
+        }
+
+        .robux-flame:nth-child(3) {
+            left: 40px;
+            bottom: 0;
+            animation-delay: 0.14s;
+        }
+
+        @keyframes robux-flicker {
+            0% {
+                transform: translateY(0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-8px) scale(1.2) rotate(15deg);
+                opacity: 0.7;
+            }
+        }
+
+        .robux-spark {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            animation: robux-spark 1.2s ease-out infinite;
+        }
+
+        @keyframes robux-spark {
+            0% {
+                transform: translateY(0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(50px) translateX(var(--spark-x)) scale(0.3) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .rocket.launch {
+            animation: takeoff 3s ease-in-out forwards;
+        }
+
+        @keyframes takeoff {
+            0% {
+                transform: translateY(0px) rotate(-5deg) scale(1);
+            }
+
+            30% {
+                transform: translateY(-350px) rotate(-10deg) scale(1.05);
+            }
+
+            70% {
+                transform: translateY(-350px) rotate(-10deg) scale(1.05);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(-5deg) scale(1);
+            }
+        }
+
+        .rocket.launch .robux-flame {
+            animation: robux-flicker-intense 0.1s ease-in-out infinite alternate;
+        }
+
+        @keyframes robux-flicker-intense {
+            0% {
+                transform: translateY(-5px) scale(0.8) rotate(10deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-12px) scale(1) rotate(-10deg);
+                opacity: 0.9;
+            }
+        }
+
+        .rocket.launch .robux-flame:nth-child(2) {
+            width: 30px;
+            height: 30px;
+        }
+
+        .robux-trail {
+            position: fixed;
+            width: 25px;
+            height: 25px;
+            pointer-events: none;
+            z-index: 49;
+            animation: trail-fade 1.5s ease-out forwards;
+        }
+
+        @keyframes trail-fade {
+            0% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.3) rotate(180deg) translateY(50px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <a href="https://diceblox.com/r/OXYY" target="_blank" rel="noopener noreferrer" class="diceblox-link">
+                <img src="DIcebloxLLOGO.png" alt="Diceblox" draggable="false">
+            </a>
+            <div class="brand-container">
+                <img src="OXY.webp" alt="OXYY" class="brand-pfp">
+                <div class="brand-text">
+                    <div class="brand">OXYY's LEADERBOARD</div>
+                    <div class="countdown" id="countdown">Loading...</div>
+                </div>
+                <span class="live-badge" id="liveBadge" style="display: none;">● LIVE</span>
+            </div>
+        </div>
+
+        <div class="podium">
+            <div class="podium-spot spot-2">
+                <div class="podium-rank">#2</div>
+                <div class="podium-player">undefined</div>
+                <div class="podium-stats"><img src="Robuxx.png" class="robux-icon"> <span>0 wagered</span></div>
+                <div class="podium-stats" style="color: #666; margin-top: 5px;">NULL</div>
+            </div>
+            <div class="podium-spot spot-1">
+                <div class="podium-rank">#1</div>
+                <div class="podium-player">undefined</div>
+                <div class="podium-stats"><img src="Robuxx.png" class="robux-icon"> <span>0 wagered</span></div>
+                <div class="podium-stats" style="color: #666; margin-top: 5px;">NULL</div>
+            </div>
+            <div class="podium-spot spot-3">
+                <div class="podium-rank">#3</div>
+                <div class="podium-player">undefined</div>
+                <div class="podium-stats"><img src="Robuxx.png" class="robux-icon"> <span>0 wagered</span></div>
+                <div class="podium-stats" style="color: #666; margin-top: 5px;">NULL</div>
+            </div>
+        </div>
+
+        <div class="board">
+            <div class="board-header">
+                <h2>rest of leaderboard</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>player</th>
+                        <th>wagered</th>
+                        <th>prize</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+            </table>
+        </div>
+
+        <a href="https://kick.com/iamtheoxyman" target="_blank" class="kick-btn">
+            <span>watch oxy on</span>
+            <img src="kickk.png" alt="Kick">
+        </a>
+    </div>
+
+    <div class="rocket-container">
+        <div class="rocket" id="rocket">
+            <img src="Rocket.png" alt="Rocket" class="rocket-img">
+            <div class="robux-container" id="robuxContainer">
+                <img src="Robuxx.png" class="robux-flame" alt="">
+                <img src="Robuxx.png" class="robux-flame" alt="">
+                <img src="Robuxx.png" class="robux-flame" alt="">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        const API_ENDPOINT = 'https://api.diceblox.com/affiliates/2024-05-17T00:00:00+01:00';
+        const API_KEY = '76f195a822302dd53867d108ebf7cc6f3c30fd2615963d6ee3';
+        const AFFILIATE_ID = '29484';
+        const CHECK_LIVE_STATUS = true;
+        const KICK_CHANNEL = 'iamtheoxyman';
+        const COUNTDOWN_END = '2024-12-31 23:59:59';
+        // ========================
+
+        // Countdown function
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const end = new Date(COUNTDOWN_END).getTime();
+            const distance = end - now;
+
+            if (distance < 0) {
+                document.getElementById('countdown').textContent = 'ENDED';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown').innerHTML =
+                `<span>${days}</span> DAYS <span>${String(hours).padStart(2, '0')}</span> HOURS <span>${String(minutes).padStart(2, '0')}</span> MINUTES <span>${String(seconds).padStart(2, '0')}</span> SECONDS LEFT`;
+        }
+
+        // create fireflies (robux images floating around)
+        for (let i = 0; i < 20; i++) {
+            const firefly = document.createElement('img');
+            firefly.src = 'Robuxx.png';
+            firefly.className = 'firefly';
+
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight;
+            const endX = Math.random() * window.innerWidth;
+            const endY = Math.random() * window.innerHeight;
+            const delay = Math.random() * 15;
+            const duration = 10 + Math.random() * 10;
+
+            firefly.style.left = startX + 'px';
+            firefly.style.top = startY + 'px';
+            firefly.style.animation = `fly ${duration}s infinite ease-in-out`;
+            firefly.style.animationDelay = delay + 's';
+
+            const keyframes = `
+        @keyframes fly${i} {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(${endX - startX}px, ${endY - startY}px) rotate(180deg);
+            }
+            90% {
+                opacity: 0.8;
+            }
+        }
+    `;
+
+            const style = document.createElement('style');
+            style.innerHTML = keyframes;
+            document.head.appendChild(style);
+            firefly.style.animation = `fly${i} ${duration}s infinite ease-in-out ${delay}s`;
+
+            document.body.appendChild(firefly);
+        }
+
+        let data = [
+            { rank: 1, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 2, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 3, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 4, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 5, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 6, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 7, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 8, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 9, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 10, player: 'undefined', wagered: 0, prize: 'NULL' }
+        ];
+
+
+
+        function formatNum(n) {
+            return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function animatePrizePool(target) {
+            const element = document.getElementById('prizePool');
+            const duration = 2000;
+            const start = 0;
+            const startTime = Date.now();
+
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (target - start) * easeOut);
+
+                element.textContent = formatNum(current);
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    element.textContent = formatNum(target);
+                }
+            }
+
+            update();
+        }
+
+        function updatePodium() {
+            const spots = [
+                { el: document.querySelectorAll('.podium-spot')[1], rank: 1 },
+                { el: document.querySelectorAll('.podium-spot')[0], rank: 2 },
+                { el: document.querySelectorAll('.podium-spot')[2], rank: 3 }
+            ];
+
+            spots.forEach(spot => {
+                const d = data.find(x => x.rank === spot.rank);
+                if (d) {
+                    spot.el.querySelector('.podium-player').textContent = d.player;
+                    const statsSpan = spot.el.querySelector('.podium-stats span');
+                    if (statsSpan) {
+                        statsSpan.textContent = `${formatNum(d.wagered)} wagered`;
+                    }
+                    spot.el.querySelectorAll('.podium-stats')[1].textContent = d.prize;
+                }
+            });
+        }
+
+        function render() {
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = '';
+
+            data.slice(3).forEach((d, index) => {
+                const tr = document.createElement('tr');
+                tr.style.opacity = '0';
+                tr.style.transform = 'translateY(-10px)';
+
+                tr.innerHTML = `
+                    <td>${d.rank}</td>
+                    <td class="player-name">${d.player}</td>
+                    <td class="stat-val"><img src="Robuxx.png" style="width: 14px; height: 14px;"> ${formatNum(d.wagered)}</td>
+                    <td class="prize-val">${d.prize}</td>
+                `;
+
+                tbody.appendChild(tr);
+
+                setTimeout(() => {
+                    tr.style.transition = 'all 0.5s ease';
+                    tr.style.opacity = '1';
+                    tr.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+
+            updatePodium();
+        }
+
+        async function checkLiveStatus() {
+            if (!CHECK_LIVE_STATUS) return;
+
+            try {
+                const liveBadge = document.getElementById('liveBadge');
+                // liveBadge.style.display = 'block'; // Uncomment when you have live detection
+            } catch (error) {
+                console.error('Error checking live status:', error);
+            }
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    headers: {
+                        'authorization': API_KEY
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const json = await response.json();
+                console.log('API Response:', json);
+
+                // Parse Diceblox API response
+                if (json && json.leaderboard && Array.isArray(json.leaderboard)) {
+                    data = json.leaderboard.slice(0, 10).map((entry, index) => ({
+                        rank: index + 1,
+                        player: entry.username || entry.name || 'unknown',
+                        wagered: Math.round(entry.totalWagered || entry.wagered || 0),
+                        prize: entry.prize || 'NULL'
+                    }));
+                }
+
+                // Update prize pool
+                if (json.prizePool !== undefined) {
+                    totalPrizePool = Math.round(json.prizePool);
+                    animatePrizePool(totalPrizePool);
+                }
+
+                render();
+            } catch (error) {
+                console.error('Error fetching leaderboard data:', error);
+            }
+        }
+
+        // Initial render
+        render();
+        checkLiveStatus();
+
+        updateCountdown();
+
+        // Update countdown every second
+        setInterval(updateCountdown, 1000);
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            fetchData();
+            checkLiveStatus();
+        }, 30000);
+
+        // Fetch data on page load
+        fetchData();
+
+        // Rocket launch animation
+        const rocket = document.getElementById('rocket');
+        const robuxContainer = document.getElementById('robuxContainer');
+
+        // Create Robux sparks
+        function createRobuxSparks() {
+            for (let i = 0; i < 3; i++) {
+                const spark = document.createElement('img');
+                spark.src = 'Robuxx.png';
+                spark.className = 'robux-spark';
+                spark.style.left = (Math.random() * 60) + 'px';
+                spark.style.bottom = '0px';
+                spark.style.setProperty('--spark-x', (Math.random() * 60 - 30) + 'px');
+                spark.style.animationDelay = (Math.random() * 0.3) + 's';
+                robuxContainer.appendChild(spark);
+
+                setTimeout(() => spark.remove(), 1200);
+            }
+        }
+
+        // Continuous spark generFation
+        setInterval(createRobuxSparks, 300);
+
+        // Create Robux trail
+        function createRobuxTrail() {
+            const rocketRect = rocket.getBoundingClientRect();
+            const trail = document.createElement('img');
+            trail.src = 'Robuxx.png';
+            trail.className = 'robux-trail';
+            trail.style.left = (rocketRect.left + rocketRect.width / 2 - 12.5) + 'px';
+            trail.style.top = (rocketRect.top + rocketRect.height) + 'px';
+            document.body.appendChild(trail);
+
+            setTimeout(() => trail.remove(), 1500);
+        }
+
+        // Launch rocket every 10 seconds
+        function launchRocket() {
+            rocket.classList.add('launch');
+
+            // Create trail during takeoff
+            const trailInterval = setInterval(() => {
+                createRobuxTrail();
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(trailInterval);
+                rocket.classList.remove('launch');
+            }, 3000);
+        }
+
+        setInterval(launchRocket, 10000);
+        setTimeout(launchRocket, 2000); // First launch after 2 seconds
+    </script>
+</body>
+
+</html>

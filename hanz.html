@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HANZ Diceblox Leaderboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0a0a0a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('Backgroundd.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 10;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(10, 10, 10, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
+            z-index: -1;
+        }
+
+        .golden-orb {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #d4af37 0%, #8b7355 50%, transparent 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: float-orb 20s infinite ease-in-out;
+        }
+
+        @keyframes float-orb {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.9;
+            }
+
+            90% {
+                opacity: 0.9;
+            }
+        }
+
+        .wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .brand-pfp {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #d4af37;
+        }
+
+        .brand-text {
+            text-align: center;
+        }
+
+        .brand {
+            font-size: 28px;
+            font-weight: 700;
+            color: #d4af37;
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        .countdown {
+            font-size: 16px;
+            color: #d4af37;
+            font-weight: 600;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        .countdown span {
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        .live-badge {
+            position: absolute;
+            top: -10px;
+            right: -80px;
+            background: #ff0000;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulse-live 2s infinite;
+        }
+
+        @keyframes pulse-live {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            }
+
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            }
+        }
+
+        .diceblox-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            transition: 0.2s;
+            cursor: pointer;
+            display: block;
+            z-index: 100;
+            pointer-events: all;
+        }
+
+        .diceblox-link img {
+            height: 35px;
+            width: auto;
+            border-radius: 4px;
+            display: block;
+            pointer-events: all;
+        }
+
+        .diceblox-link:hover {
+            transform: scale(1.05);
+        }
+
+        .podium {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            position: relative;
+        }
+
+
+        .podium-spot {
+            background: rgba(15, 15, 25, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            min-width: 140px;
+            transition: all 0.5s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .podium-spot:hover {
+            background: rgba(20, 20, 30, 0.95);
+            border-color: rgba(212, 175, 55, 0.5);
+        }
+
+        .spot-2 {
+            height: 160px;
+            order: 1;
+        }
+
+        .spot-1 {
+            height: 200px;
+            order: 2;
+            border-color: #d4af37;
+            position: relative;
+        }
+
+        .spot-1::before {
+            content: '';
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 35px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 35"><defs><linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="%23FFD700"/><stop offset="100%" stop-color="%23DAA520"/></linearGradient></defs><path d="M2 33 L10 8 L18 25 L25 2 L32 25 L40 8 L48 33 L40 28 L32 31 L25 27 L18 31 L10 28 Z" fill="url(%23goldGrad)" stroke="%23DAA520" stroke-width="1.5"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+
+        .spot-3 {
+            height: 140px;
+            order: 3;
+        }
+
+        .podium-rank {
+            font-size: 28px;
+            font-weight: 700;
+            color: #d4af37;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .spot-1 .podium-rank {
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+
+        .spot-2 .podium-rank {
+            color: #c0c0c0;
+        }
+
+        .spot-3 .podium-rank {
+            color: #cd7f32;
+        }
+
+        .podium-player {
+            font-size: 15px;
+            color: #e0e0e0;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .podium-stats {
+            font-size: 12px;
+            color: #888;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .robux-icon {
+            width: 12px;
+            height: 12px;
+        }
+
+        .board {
+            background: rgba(15, 15, 25, 0.9);
+            border-radius: 6px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            overflow: hidden;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .board-header {
+            background: rgba(10, 10, 20, 0.95);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .board-header h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(10, 10, 20, 0.95);
+        }
+
+        th {
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child {
+            width: 60px;
+            text-align: center;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            transition: all 0.5s ease;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(20, 20, 30, 0.6);
+            box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.05);
+        }
+
+        td {
+            padding: 15px 20px;
+            font-size: 14px;
+        }
+
+        td:first-child {
+            text-align: center;
+            font-weight: 700;
+            color: #d4af37;
+        }
+
+        .player-name {
+            color: #e0e0e0;
+        }
+
+        .stat-val {
+            color: #aaa;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .prize-val {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .kick-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: rgba(15, 15, 25, 0.9);
+            color: #e0e0e0;
+            padding: 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            text-align: center;
+            font-weight: 600;
+            transition: 0.2s;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .kick-btn:hover {
+            background: rgba(20, 20, 30, 0.95);
+            border-color: #d4af37;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .kick-btn img {
+            height: 24px;
+            width: auto;
+        }
+
+        @media (max-width: 768px) {
+            .podium {
+                flex-direction: column;
+                align-items: center;
+            }
+
+
+
+            .spot-1,
+            .spot-2,
+            .spot-3 {
+                order: initial;
+                height: auto;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            th,
+            td {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <a href="https://diceblox.com/r/hanz" target="_blank" rel="noopener noreferrer" class="diceblox-link">
+                <img src="DIcebloxLLOGO.png" alt="Diceblox" draggable="false">
+            </a>
+            <div class="brand-container">
+                <img src="hanz.webp" alt="HANZ" class="brand-pfp">
+                <div class="brand-text">
+                    <div class="brand">HANZ'S LEADERBOARD</div>
+                    <div class="countdown" id="countdown">Loading...</div>
+                </div>
+                <span class="live-badge" id="liveBadge" style="display: none;">● LIVE</span>
+            </div>
+        </div>
+
+        <div class="podium">
+
+
+            <div class="podium-spot spot-2">
+                <div class="podium-rank">#2</div>
+                <div class="podium-player">undefined</div>
+                <div class="podium-stats"><img src="Robuxx.png" class="robux-icon"> <span>0 wagered</span></div>
+                <div class="podium-stats" style="color: #666; margin-top: 5px;">NULL</div>
+            </div>
+            <div class="podium-spot spot-1">
+                <div class="podium-rank">#1</div>
+                <div class="podium-player">undefined</div>
+                <div class="podium-stats"><img src="Robuxx.png" class="robux-icon"> <span>0 wagered</span></div>
+                <div class="podium-stats" style="color: #666; margin-top: 5px;">NULL</div>
+            </div>
+            <div class="podium-spot spot-3">
+                <div class="podium-rank">#3</div>
+                <div class="podium-player">undefined</div>
+                <div class="podium-stats"><img src="Robuxx.png" class="robux-icon"> <span>0 wagered</span></div>
+                <div class="podium-stats" style="color: #666; margin-top: 5px;">NULL</div>
+            </div>
+
+
+        </div>
+
+        <div class="board">
+            <div class="board-header">
+                <h2>rest of leaderboard</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>player</th>
+                        <th>wagered</th>
+                        <th>prize</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+            </table>
+        </div>
+
+        <a href="https://kick.com/hanzlair" target="_blank" class="kick-btn">
+            <span>watch hanz on</span>
+            <img src="kickk.png" alt="Kick">
+        </a>
+    </div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        const API_ENDPOINT = 'https://api.diceblox.com/affiliates/29484?start=2025-11-01T07:00:00Z&end=2025-11-08T07:00:00Z';
+        const API_KEY = 'fb702338e1a77b9620b6114cf0fda762f2e3fdab981e772150';
+        const AFFILIATE_ID = '29484';
+        const CHECK_LIVE_STATUS = true;
+        const KICK_CHANNEL = 'hanzlair';
+        const COUNTDOWN_END = '2025-11-08 02:00:00'; // Changed to Nov 8 at 2 AM EST
+        const API_URL = `https://api.diceblox.com/affiliates?start=2025-11-01T07:00:00Z&end=2025-11-08T07:00:00Z`;
+        const PROXY_URL = `https://api.allorigins.win/raw?url=${encodeURIComponent(API_URL)}`;
+
+        fetch(PROXY_URL, {
+            headers: {
+                'Authorization': `Bearer fb702338e1a77b9620b6114cf0fda762f2e3fdab981e772150`,
+                'Accept': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(console.log)
+            .catch(console.error);
+
+
+        // Countdown function
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const end = new Date(COUNTDOWN_END).getTime();
+            const distance = end - now;
+
+            if (distance < 0) {
+                document.getElementById('countdown').textContent = 'ENDED';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown').innerHTML =
+                `<span>${days}</span> DAYS <span>${String(hours).padStart(2, '0')}</span> HOURS <span>${String(minutes).padStart(2, '0')}</span> MINUTES <span>${String(seconds).padStart(2, '0')}</span> SECONDS LEFT`;
+        }
+
+        // Create golden floating orbs
+        for (let i = 0; i < 30; i++) {
+            const orb = document.createElement('div');
+            orb.className = 'golden-orb';
+
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight;
+            const endX = Math.random() * window.innerWidth;
+            const endY = Math.random() * window.innerHeight;
+            const delay = Math.random() * 20;
+            const duration = 15 + Math.random() * 15;
+
+            orb.style.left = startX + 'px';
+            orb.style.top = startY + 'px';
+
+            const keyframes = `
+                @keyframes float-orb${i} {
+                    0%, 100% {
+                        transform: translate(0, 0);
+                        opacity: 0;
+                    }
+                    10% {
+                        opacity: 0.9;
+                    }
+                    50% {
+                        transform: translate(${endX - startX}px, ${endY - startY}px);
+                    }
+                    90% {
+                        opacity: 0.9;
+                    }
+                }
+            `;
+
+            const style = document.createElement('style');
+            style.innerHTML = keyframes;
+            document.head.appendChild(style);
+            orb.style.animation = `float-orb${i} ${duration}s infinite ease-in-out ${delay}s`;
+
+            document.body.appendChild(orb);
+        }
+
+
+
+        let data = [
+            { rank: 1, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 2, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 3, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 4, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 5, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 6, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 7, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 8, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 9, player: 'undefined', wagered: 0, prize: 'NULL' },
+            { rank: 10, player: 'undefined', wagered: 0, prize: 'NULL' }
+        ];
+
+        function formatNum(n) {
+            return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function animatePrizePool(target) {
+            const element = document.getElementById('prizePool');
+            if (!element) return;
+            const duration = 2000;
+            const start = 0;
+            const startTime = Date.now();
+
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (target - start) * easeOut);
+
+                element.textContent = formatNum(current);
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    element.textContent = formatNum(target);
+                }
+            }
+
+            update();
+        }
+
+        function updatePodium() {
+            const spots = [
+                { el: document.querySelectorAll('.podium-spot')[1], rank: 1 },
+                { el: document.querySelectorAll('.podium-spot')[0], rank: 2 },
+                { el: document.querySelectorAll('.podium-spot')[2], rank: 3 }
+            ];
+
+            spots.forEach(spot => {
+                const d = data.find(x => x.rank === spot.rank);
+                if (d) {
+                    spot.el.querySelector('.podium-player').textContent = d.player;
+                    const statsSpan = spot.el.querySelector('.podium-stats span');
+                    if (statsSpan) {
+                        statsSpan.textContent = `${formatNum(d.wagered)} wagered`;
+                    }
+                    spot.el.querySelectorAll('.podium-stats')[1].textContent = d.prize;
+                }
+            });
+        }
+
+        function render() {
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = '';
+
+            data.slice(3).forEach((d, index) => {
+                const tr = document.createElement('tr');
+                tr.style.opacity = '0';
+                tr.style.transform = 'translateY(-10px)';
+
+                tr.innerHTML = `
+                    <td>${d.rank}</td>
+                    <td class="player-name">${d.player}</td>
+                    <td class="stat-val"><img src="Robuxx.png" style="width: 14px; height: 14px;"> ${formatNum(d.wagered)}</td>
+                    <td class="prize-val">${d.prize}</td>
+                `;
+
+                tbody.appendChild(tr);
+
+                setTimeout(() => {
+                    tr.style.transition = 'all 0.5s ease';
+                    tr.style.opacity = '1';
+                    tr.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+
+            updatePodium();
+        }
+
+        async function checkLiveStatus() {
+            if (!CHECK_LIVE_STATUS) return;
+
+            try {
+                const liveBadge = document.getElementById('liveBadge');
+                // liveBadge.style.display = 'block'; // Uncomment when you have live detection
+            } catch (error) {
+                console.error('Error checking live status:', error);
+            }
+        }
+
+        async function fetchData() {
+            try {
+                // Use allorigins proxy with proper headers
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(API_ENDPOINT)}`;
+
+                const response = await fetch(proxyUrl, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    console.error(`API Error: ${response.status} ${response.statusText}`);
+                    console.log('Response:', await response.text());
+                    return;
+                }
+
+                const json = await response.json();
+                console.log('Full API Response:', json);
+
+                // Check for API error
+                if (json && json.error) {
+                    console.error('API returned error:', json.error);
+                    console.error('Error message:', json.error.message || json.error);
+                    return;
+                }
+
+                // Try different possible response structures
+                let leaderboardData = null;
+
+                if (json && json.leaderboard && Array.isArray(json.leaderboard)) {
+                    leaderboardData = json.leaderboard;
+                } else if (json && Array.isArray(json.data)) {
+                    leaderboardData = json.data;
+                } else if (Array.isArray(json)) {
+                    leaderboardData = json;
+                } else if (json && json.users) {
+                    leaderboardData = json.users;
+                }
+
+                if (leaderboardData && leaderboardData.length > 0) {
+                    data = leaderboardData.slice(0, 10).map((entry, index) => ({
+                        rank: index + 1,
+                        player: entry.username || entry.name || entry.player || entry.user || 'unknown',
+                        wagered: Math.round(entry.totalWagered || entry.wagered || entry.amount || entry.total || 0),
+                        prize: entry.prize || entry.reward || 'NULL'
+                    }));
+                    console.log('Parsed data:', data);
+                } else {
+                    console.error('Could not find leaderboard data in response');
+                    console.log('Response structure:', Object.keys(json || {}));
+                }
+
+                render();
+            } catch (error) {
+                console.error('Error fetching leaderboard data:', error);
+                console.error('Error details:', error.message);
+            }
+        }
+        // Initial render
+        render();
+        checkLiveStatus();
+        updateCountdown();
+
+        // Update countdown every second
+        setInterval(updateCountdown, 1000);
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            fetchData();
+            checkLiveStatus();
+        }, 30000);
+
+        // Fetch data on page load
+        fetchData();
+    </script>
+</body>
+
+</html>
