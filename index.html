@@ -697,15 +697,15 @@
 
     <script>
 // ===== CONFIGURATION =====
-        const LEADERBOARD_START_DATE = new Date('2026-03-04T19:00:00-05:00');
-        const LEADERBOARD_END_DATE   = new Date('2026-03-11T19:00:00-05:00');
+const LEADERBOARD_START_DATE = new Date('2026-03-11T23:00:00-05:00');
+const LEADERBOARD_END_DATE   = new Date('2026-03-18T23:00:00-05:00');
 
-        const API_ENDPOINT_BASE = `https://api.raw365.gg/v2/affiliate-api/leaderboard?apiKey=092975e9-3026-4254-925e-0e8d940691ad&start=${LEADERBOARD_START_DATE.toISOString()}&end=${LEADERBOARD_END_DATE.toISOString()}`;
-        const API_ENDPOINT = `https://api.allorigins.win/raw?url=${encodeURIComponent(API_ENDPOINT_BASE)}`;
+const API_ENDPOINT_BASE = `https://api.raw365.gg/v2/affiliate-api/leaderboard?apiKey=092975e9-3026-4254-925e-0e8d940691ad&start=${LEADERBOARD_START_DATE.toISOString()}&end=${LEADERBOARD_END_DATE.toISOString()}`;
+const API_ENDPOINT = `https://api.allorigins.win/raw?url=${encodeURIComponent(API_ENDPOINT_BASE)}`;
 
-        const CHECK_LIVE_STATUS = true;
-        const KICK_CHANNEL = 'bigmantoughguy';
-        const CACHE_KEY = 'raw365_lb_cache';
+const CHECK_LIVE_STATUS = true;
+const KICK_CHANNEL = 'bigmantoughguy';
+const CACHE_KEY = 'raw365_lb_cache';
         // ========================
 
 function updateCountdown() {
