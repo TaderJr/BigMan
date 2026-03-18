@@ -251,8 +251,8 @@ canvas#ff{position:fixed;inset:0;z-index:1;pointer-events:none;}
     <div id="lb-body"></div>
   </div>
 
-  <div class="refresh-badge"><div class="refresh-dot"></div><span>Live · Refreshes every 15 min (I think)</span></div>
-  <div class="foot">Made with baby oil for BigMan by Wallahi King Tader</div>
+  <div class="refresh-badge"><div class="refresh-dot"></div><span>Live · Refreshes every 15 min</span></div>
+  <div class="foot">Made with ❤ for BigMan</div>
 </div>
 
 <script>
@@ -373,19 +373,26 @@ function buildRows(players){
 document.getElementById('podium').innerHTML=buildPodium([]);
 document.getElementById('lb-body').innerHTML=buildRows([]);
 
-// API with cache — on rate limit or error keep last good data
+// API with cache — tries multiple CORS proxies on failure
 let cache=[];
+const PROXIES=[
+  url=>url, // direct first
+  url=>`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+  url=>`https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url=>`https://proxy.cors.sh/${url}`,
+];
 async function load(){
   try{
     const url=`https://api.roulobets.com/v1/external/affiliates?start_at=${START_DATE}&end_at=${END_DATE}&key=${API_KEY}`;
-    let r;
-    try{r=await fetch(url);}
-    catch(e){r=await fetch('https://corsproxy.io/?'+encodeURIComponent(url));}
-    if(r.status===429){
-      console.warn('[Roulo] Rate limited — serving cached data');
-      return; // don't update render, keep cache
+    let r=null;
+    for(const proxy of PROXIES){
+      try{
+        r=await fetch(proxy(url),{signal:AbortSignal.timeout(8000)});
+        if(r.ok)break;
+        if(r.status===429){console.warn('[Roulo] Rate limited — using cache');return;}
+      }catch(e){r=null;}
     }
-    if(r.ok){
+    if(r&&r.ok){
       const d=await r.json();
       let arr=Array.isArray(d)?d:(d.data||d.leaderboard||d.players||d.results||d.entries||d.affiliates||[]);
       arr.sort((a,b)=>
@@ -393,6 +400,8 @@ async function load(){
         Number(a.wagered||a.wager||a.amount||a.total_wagered||0)
       );
       cache=arr;
+    }else{
+      console.warn('[Roulo] All proxies failed — using cache');
     }
   }catch(e){
     console.warn('[Roulo] Fetch error, using cache:',e);
