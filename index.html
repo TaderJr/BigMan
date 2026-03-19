@@ -292,7 +292,7 @@ const flies=Array.from({length:45},()=>({
   requestAnimationFrame(loop);
 })();
 
-// TIMER — always counts down to END date (March 25 4pm EST)
+// TIMER — always counts down to END date (April 1 4pm EST)
 function pad(n){return String(n).padStart(2,'0');}
 function tick(){
   const ms=Math.max(0,T_END-Date.now());
@@ -309,17 +309,18 @@ function ini(n){return(n&&typeof n==='string')?n[0].toUpperCase():'?';}
   function getWagerValue(p){
   if (!p || typeof p !== 'object') return null;
 
-  const possibleKeys = [
-    'wagered',
-    'wager',
-    'amount',
-    'total_wagered',
-    'wager_amount',
-    'wagerAmount',
-    'totalWagered',
-    'volume',
-    'turnover'
-  ];
+const possibleKeys = [
+  'wagered_amount',
+  'wagered',
+  'wager',
+  'amount',
+  'total_wagered',
+  'wager_amount',
+  'wagerAmount',
+  'totalWagered',
+  'volume',
+  'turnover'
+];
 
   for (const key of possibleKeys) {
     if (p[key] !== undefined && p[key] !== null && p[key] !== '') {
@@ -417,9 +418,11 @@ async function load(){
     if(r&&r.ok){
       const d=await r.json();
       console.log('Roulo API response:', d);
-console.log('First entry:', Array.isArray(d) ? d[0] : (d.data || d.leaderboard || d.players || d.results || d.entries || d.affiliates || [])[0]);
+console.log('First entry:', Array.isArray(d) ? d[0] : (d.affiliates || d.data || d.leaderboard || d.players || d.results || d.entries || [])[0]);
     
-      let arr=Array.isArray(d)?d:(d.data||d.leaderboard||d.players||d.results||d.entries||d.affiliates||[]);
+let arr = Array.isArray(d)
+  ? d
+  : (d.affiliates || d.data || d.leaderboard || d.players || d.results || d.entries || []);
     arr.sort((a,b) => (getWagerValue(b) ?? 0) - (getWagerValue(a) ?? 0));
       cache=arr;
     }else{
